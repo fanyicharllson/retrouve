@@ -1,6 +1,6 @@
 # Retrouvé — Product & Technical Specification
 
-> Version 0.1 · 28 October 2026 · Status: draft for review
+> Version 0.2 · 29 October 2026 · Status: draft for review
 > Author: Fanyi Charllson (ICT University, final year project)
 
 ---
@@ -9,7 +9,7 @@
 
 **Retrouvé** is a mobile app that returns lost official documents (CNI, birth certificates, passports, diplomas, driving licences…) to their owners in Cameroon.
 
-A **finder** photographs a found document and drops it at a nearby **partner point** (shop, cyber café, campus office, commissariat). The app reads the document (OCR), stores only a **masked** image, and automatically **matches** it with owners who declared it lost. The **owner** proves ownership, pays a small recovery fee by **MTN MoMo / Orange Money**, and collects the document at the partner point with a **QR code + OTP**. The finder and the partner point receive a share of the fee.
+A **finder** photographs a found document. The app reads it (OCR), stores only a **masked** image, and automatically **matches** it with owners who declared it lost. The finder then either drops it at a nearby **partner point** (shop, cyber café, campus office, commissariat — recommended) or keeps it and **hands it over directly** in a public place. The **owner** proves ownership, pays a small recovery fee by **MTN MoMo / Orange Money** (held in escrow), and collects the document by showing a **pickup QR code** that the agent — or the finder — scans. The finder (and the partner point) receive a share of the fee once the handover is confirmed.
 
 **Tagline:** *Vos documents officiels, rendus en sécurité.* / *Your official documents, safely returned.*
 
@@ -71,7 +71,7 @@ Design and build a secure mobile platform that connects finders and owners of lo
 
 ## 5. User roles
 
-One account per person (phone number + OTP). Roles are cumulative.
+One account per person, signed in with **Google** or an **email code** (no paid SMS in the MVP). The phone number is collected in the profile for Mobile Money payouts and refunds, but not verified by SMS. There is **no role picker**: every user is both finder and owner; partner agents are approved by an admin. Roles are cumulative.
 
 | Role | Who | Can do |
 |---|---|---|
@@ -112,10 +112,10 @@ Passport, carte grise, récépissé CNI, nationality certificate, marriage certi
 2. Camera captures the document → **on-device OCR** extracts name, DOB, number.
 3. The app **masks** the image on the device (blur photo, number, signature; keeps a recognisable outline). **Only the masked image is uploaded.**
 4. Finder confirms / corrects the extracted fields.
-5. Finder picks a nearby partner point on a map (or "I'm at a partner point now").
-6. App shows a **drop-off QR code**; status = `DECLARED`.
-7. At the partner point the agent scans the QR and checks the physical document matches → status = `IN_CUSTODY`.
-8. Declarations not dropped off within **72 h** expire.
+5. Finder chooses **how to return it**:
+   - **Partner point (recommended):** picks a point on a map → app shows a **drop-off QR code**; status = `DECLARED`. The agent scans the QR and checks the physical document → `IN_CUSTODY`. Declarations not dropped off within **72 h** expire.
+   - **Direct handover:** finder keeps the document → status = `WITH_FINDER` (see §7.5).
+6. Every code (drop-off, pickup) is stored in the user's account and always available under **My documents**, even after closing the app.
 
 ### 7.2 Partner bulk intake
 Agent at a commissariat / campus office scans many documents in a row (no finder involved). Each becomes `IN_CUSTODY` directly. Finder share goes to the partner.
@@ -123,20 +123,34 @@ Agent at a commissariat / campus office scans many documents in a row (no finder
 ### 7.3 Owner declares a loss
 1. Owner taps **"J'ai perdu un document"**, picks the type, enters name, DOB and any known number.
 2. System runs matching immediately and again each time a new document enters custody.
-3. Optional **pre-registration**: owner registers their documents before any loss (number stored **hashed**) → instant exact match later.
+3. Optional **pre-registration** ("Protect a document" in the **+** menu): owner registers their documents before any loss (number stored **hashed**) → instant exact match later.
+4. **My documents** shows each report with a status timeline (Reported → Searching → Possible match → Verified & paid → Ready for pickup → Collected) and tips while waiting (déclaration de perte, idcam.cm pre-enrolment, block SIM / MoMo).
+5. Loss reports and found documents are **never public**, not even masked. A search only returns a result when name **and** date of birth both match.
 
 ### 7.4 Match → verification → payment → handover
 1. Match found → owner gets push + SMS: *"Un document correspondant à votre déclaration a peut-être été retrouvé."* No details are revealed yet.
-2. Owner answers the type's verification questions (3 attempts, then admin review).
-3. On success the owner sees the masked image, the partner point and its hours, and pays the fee (MoMo / OM). Funds are **held**.
-4. Owner receives a **handover QR + 6-digit OTP**, valid 14 days.
-5. At the partner point, the agent scans the QR, the owner gives the OTP, the agent checks the owner's face against the document photo → status = `RETURNED`.
+2. Owner proves ownership in **one** of two ways (3 attempts, then admin review):
+   - **Upload a photo, scan or photocopy** of the document from the gallery → read by on-device OCR and compared with the found document (name, DOB, number). The image is deleted after the check.
+   - **Answer 2 questions** they know without the card (place / year of issue, last 3 digits, parents' names for a birth certificate…).
+3. On success the owner sees where and how to collect, and pays the fee (MoMo / OM). Funds are **held** (escrow).
+4. Owner receives a **pickup QR code + 6-digit backup code**, valid 14 days, always available in My documents.
+5. At the partner point, the agent scans the QR and checks the owner's face against the document photo, then taps "Handed over" → status = `RETURNED`.
 6. Payout split is released (see §9).
 
-### 7.5 Unclaimed documents
+> Not in the MVP: in-app selfie / face matching. Only masked images are stored, and reliable face-matching services are costly and sensitive. Phone biometrics (fingerprint, Face ID) cannot prove ownership — they only unlock the phone. The face check happens in person at handover.
+
+### 7.5 Direct handover (finder keeps the document)
+1. Owner is verified and has paid → the finder is notified.
+2. Finder and owner agree on a **public** meeting place and time through in-app messages; phone numbers stay hidden. A partner point can be used as the meeting place.
+3. The owner's app guides them: meet in public → show the code → check the card → tap "I received it".
+4. The finder scans the owner's pickup QR (or types the 6-digit code) → the app confirms "verified owner, paid". The finder checks the face and the last 3 digits, hands over and taps "I handed it over".
+5. Money is released when **both** confirm, or 24 h after the finder confirms with no problem reported. No handover within 48 h → owner refunded. Either side can report a problem → `DISPUTED`.
+6. The finder can switch to a partner point at any time.
+
+### 7.6 Unclaimed documents
 After **90 days** in custody with no successful claim → status = `TO_AUTHORITY`. The partner hands it to the destination of its type (commissariat, mairie, school) and confirms in the app → `HANDED_TO_AUTHORITY`.
 
-### 7.6 Not found yet
+### 7.7 Not found yet
 If no match after 7 days, the owner sees a **replacement guide** for the type (declaration of loss, documents needed, idcam.cm pre-enrolment for CNI). Their declaration stays active for 6 months.
 
 ---
@@ -155,6 +169,9 @@ EXPIRED                             │                                 ▼
                               TO_AUTHORITY ──▶ HANDED_TO_AUTHORITY   RETURNED
 
 Any state ──(admin)──▶ DISPUTED ──▶ back to a previous state or CLOSED
+
+Direct handover: DECLARED ──▶ WITH_FINDER ──(owner verified)──▶ CLAIMED ──(paid)──▶ AWAITING_MEETUP
+                 ──(finder scans owner QR + both confirm)──▶ RETURNED   (48 h without handover → refund)
 ```
 
 ---
@@ -164,7 +181,14 @@ Any state ──(admin)──▶ DISPUTED ──▶ back to a previous state or 
 - Provider: **Notch Pay** (primary) or **CinetPay**. Collection by MTN MoMo / Orange Money. Payouts (finder / partner) via the provider's transfer API, or manually by admin in the MVP if the API is not available.
 - **Escrow:** the fee is collected at claim time and recorded as `HELD`; it is split only after `RETURNED`.
 - Refund if the partner cannot hand over within 14 days (lost document, partner closed).
-- **Draft split** (on a 1,500 FCFA fee): finder 40 % · partner 30 % · platform 30 % (minus provider fees). If no finder (bulk intake), the finder share goes to the partner.
+- **Payment timing:** right after successful verification, before pickup. Shown to the owner as "where your money goes".
+- **Split** (on a 1,500 FCFA fee), platform share minus provider fees:
+
+| Mode | Finder | Partner point | Retrouvé |
+|---|---|---|---|
+| Partner point | 40 % (600) | 30 % (450) | 30 % (450) |
+| Direct handover | 70 % (1,050) | — | 30 % (450) |
+| Bulk intake (no finder) | — | 70 % (1,050) | 30 % (450) |
 - The fee is a **service fee** (custody, verification, notification), never a price for the document itself.
 
 ---
@@ -178,9 +202,12 @@ Any state ──(admin)──▶ DISPUTED ──▶ back to a previous state or 
 | Impostor claims a document | Type-specific questions, 3 attempts, face check against the document photo at handover, OTP to the declared phone. |
 | Fake partner point | Partner points approved by admin (visit / call, business registration or institution letter). |
 | Finder asks for direct payment | App warns: never pay anyone directly; all payments in-app. Reports → admin. |
+| Direct handover: unsafe meeting | Public places only, in-app messages with hidden phone numbers, partner point offered as meeting place. |
+| Direct handover: finder never shows | Escrow — owner refunded after 48 h; finder reputation lowered. |
+| Direct handover: fake confirmation | Money released only when both confirm (or 24 h with no report); disputes go to admin. |
 | Partner loses / keeps document | Every custody step is logged with timestamp and agent; disputes and partner rating. |
 | Document numbers leaked from DB | Numbers stored as salted hashes for matching; only the last 3 digits kept in clear for display. |
-| Account takeover | Phone OTP login, short-lived JWT + refresh tokens, device binding for partner agents. |
+| Account takeover | Google sign-in or email code, short-lived JWT + refresh tokens, device binding for partner agents. |
 
 **Legal basis (to confirm with a lawyer / the administration):**
 - Official ID documents remain state property → unclaimed documents always go back to the authority.
@@ -245,7 +272,8 @@ For each new `IN_CUSTODY` document and each new loss declaration of the same typ
 - **PostgreSQL** with `pgx` + **sqlc** (type-safe queries), **goose** migrations.
 - Jobs: **river** (Postgres-backed queue) for matching, SMS, payment webhooks, expiries.
 - API contract: **OpenAPI 3** spec → `oapi-codegen` (Go) and `openapi-typescript` (mobile types).
-- Auth: phone OTP → JWT access + refresh tokens.
+- Auth: Google ID token or email one-time code → JWT access + refresh tokens. Email via a free-tier provider (e.g. Resend); SMS OTP is future work when funded.
+- Notifications: Expo push (free) in the MVP; SMS later.
 - Storage: S3-compatible bucket (Cloudflare R2 or similar) for masked images.
 
 ### 13.3 Hosting
@@ -276,7 +304,8 @@ For each new `IN_CUSTODY` document and each new loss declaration of the same typ
 
 | Area | Endpoints (examples) |
 |---|---|
-| Auth | `POST /auth/otp/request` · `POST /auth/otp/verify` · `POST /auth/refresh` |
+| Auth | `POST /auth/google` · `POST /auth/email/request` · `POST /auth/email/verify` · `POST /auth/refresh` |
+| Direct handover | `GET/POST /handovers/{id}/messages` · `POST /handovers/{id}/scan` · `POST /handovers/{id}/confirm` · `POST /handovers/{id}/report` |
 | Document types | `GET /document-types` |
 | Found | `POST /found-documents` · `GET /me/found-documents` · `POST /found-documents/{id}/image` |
 | Losses | `POST /loss-declarations` · `GET /me/loss-declarations` · `POST /registered-documents` |
@@ -290,12 +319,18 @@ For each new `IN_CUSTODY` document and each new loss declaration of the same typ
 ## 16. MVP feature checklist
 
 **Must have**
-- [ ] Phone OTP sign-up / login, FR / EN
+- [ ] Google / email-code sign-in, profile setup, FR / EN (switchable from onboarding)
+- [ ] Onboarding slides + splash screen
+- [ ] **+** menu: I found · I lost · Protect a document
 - [ ] Declare found document with OCR + on-device masking
+- [ ] Return choice: partner point (drop-off QR) or direct handover
 - [ ] Partner point map + drop-off QR
+- [ ] Direct handover: in-app messages, finder scans owner QR, double confirmation
+- [ ] My documents: status timeline, waiting tips, codes always available
+- [ ] Privacy-first search (name + date of birth)
 - [ ] Partner: intake scan, bulk intake, stock, handover (QR + OTP)
 - [ ] Declare loss + automatic matching + push / SMS notification
-- [ ] Ownership verification questions
+- [ ] Ownership verification: document photo upload **or** questions
 - [ ] MoMo / OM payment with escrow + payout split
 - [ ] Custody audit log
 - [ ] Admin: approve partners, disputes, stats
@@ -342,6 +377,6 @@ For each new `IN_CUSTODY` document and each new loss declaration of the same typ
 
 1. Final fee per type and split percentages.
 2. Notch Pay vs CinetPay: payout API availability and KYC requirements for a student project.
-3. SMS provider for Cameroon (cost per SMS, sender ID).
+3. SMS provider for Cameroon (cost per SMS, sender ID) — only once funded; the MVP uses Google / email sign-in and push notifications.
 4. Which partner points agree to the pilot?
 5. Is a face check by the agent enough, or should the owner also show another ID?

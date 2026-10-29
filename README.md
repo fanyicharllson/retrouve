@@ -5,10 +5,10 @@
 Retrouvé is a mobile app that returns lost official documents (CNI, birth certificates, student cards, driving licences, diplomas…) to their owners in Cameroon.
 
 1. A **finder** scans a found document. OCR reads it on the phone and the image is masked before upload.
-2. The finder drops it at a nearby **partner point** (shop, cyber café, campus office, commissariat).
-3. The **owner**, who declared the loss, is matched automatically and notified by push + SMS.
-4. The owner proves ownership, pays a small fee by **MTN MoMo / Orange Money**, and collects the document with a **QR code + OTP**.
-5. The finder and the partner point are paid once the handover is confirmed.
+2. The finder drops it at a nearby **partner point** (shop, cyber café, campus office, commissariat), or keeps it and hands it over in a public place.
+3. The **owner**, who declared the loss, is matched automatically and notified by push.
+4. The owner proves ownership (photo of the document or questions), pays a small fee by **MTN MoMo / Orange Money** (held in escrow), and collects the document by showing a **pickup QR code**.
+5. The finder (and the partner point) are paid once the handover is confirmed.
 
 > Final year project by **Fanyi Charllson** — ICT University, Yaoundé (2026–2027).
 
