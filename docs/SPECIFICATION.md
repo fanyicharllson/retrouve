@@ -92,11 +92,13 @@ The system is **type-agnostic**: a document type is configuration (fields, match
 
 | Type | Match keys | Verification questions (examples) | Fee (draft) | Unclaimed → |
 |---|---|---|---|---|
-| CNI | Doc number (exact) · name + DOB | Last 3 digits of number, place of issue | 1,500 FCFA | Commissariat |
-| Birth certificate (acte de naissance) | Name + DOB + place of birth (fuzzy) · acte number | Father's or mother's name, état civil centre | 1,500 FCFA | Mairie / état civil centre |
+| CNI | Doc number (exact) · name + DOB | Last 3 digits of number, place of issue | 2,000 FCFA | Commissariat |
+| Birth certificate (acte de naissance) | Name + DOB + place of birth (fuzzy) · acte number | Father's or mother's name, état civil centre | 2,000 FCFA | Mairie / état civil centre |
 | Student card | Matricule (exact) · name | Faculty / programme, year | 1,000 FCFA | University administration |
-| Driving licence | Licence number (exact) · name + DOB | Categories, place of issue | 1,500 FCFA | Commissariat |
-| Diploma / certificate (BAC, GCE, BEPC, Licence…) | Name + DOB + exam year · candidate number | Exam centre / school, session | 2,000 FCFA | Issuing school / office |
+| Driving licence | Licence number (exact) · name + DOB | Categories, place of issue | 2,000 FCFA | Commissariat |
+| Diploma / certificate (BAC, GCE, BEPC, Licence…) | Name + DOB + exam year · candidate number | Exam centre / school, session | 3,000 FCFA | Issuing school / office |
+
+Passports (future type) use the 3,000 FCFA tier.
 
 ### 6.2 Future types
 Passport, carte grise, récépissé CNI, nationality certificate, marriage certificate, relevés de notes, health booklet, work / CNPS badges.
@@ -186,13 +188,20 @@ Direct handover: DECLARED ──▶ WITH_FINDER ──(owner verified)──▶ 
 - **Provider fees:** the payment provider takes a cut on collection (owner pays in) and on payout (withdrawal). The collection fee is taken from the **platform's** share so the finder and partner amounts stay round; the payout fee is shown to the user at withdrawal. Exact rates depend on the chosen provider (Notch Pay / CinetPay).
 - **No payment between users:** chat between finder and owner opens only after the owner has paid, and blocks phone numbers and money requests, so payments stay in the app (protecting users and the platform's revenue).
 - **Payment timing:** right after successful verification, before pickup. Shown to the owner as "where your money goes".
-- **Split** (on a 1,500 FCFA fee), platform share minus provider fees:
+- **Tiered fees** by document value (still cheaper than competitors charging ~3,000 FCFA): student card 1,000 · CNI / licence / birth certificate 2,000 · passport / diploma 3,000.
+- **Split** (percentages apply to every tier; platform share minus provider fees):
 
 | Mode | Finder | Partner point | Retrouvé |
 |---|---|---|---|
-| Partner point | 40 % (600) | 30 % (450) | 30 % (450) |
-| Direct handover | 70 % (1,050) | — | 30 % (450) |
-| Bulk intake (no finder) | — | 70 % (1,050) | 30 % (450) |
+| Partner point | 40 % | 30 % | 30 % |
+| Direct handover | 70 % | — | 30 % |
+| Bulk intake (no finder) | — | 70 % | 30 % |
+
+| Tier | Finder (partner / direct) | Partner | Retrouvé |
+|---|---|---|---|
+| 1,000 FCFA | 400 / 700 | 300 | 300 |
+| 2,000 FCFA | 800 / 1,400 | 600 | 600 |
+| 3,000 FCFA | 1,200 / 2,100 | 900 | 900 |
 - The fee is a **service fee** (custody, verification, notification), never a price for the document itself.
 
 ---
@@ -341,7 +350,10 @@ For each new `IN_CUSTODY` document and each new loss declaration of the same typ
 - [ ] Privacy-first search (name + date of birth)
 - [ ] Wallet: available / on hold, history, withdraw to MoMo / OM
 - [ ] Alerts tab, Profile tab (version + check for updates, sign-out confirmation)
-- [ ] Help & how it works (in-app browser to the website), report a problem, become a partner point
+- [ ] Native "How Retrouvé works" guide (finder / owner tabs, reward table); in-app browser only for website pages (terms, privacy, blog)
+- [ ] Help & FAQ, report a problem, become a partner point
+- [ ] Settings: language, notification types, email, download my data, privacy & terms
+- [ ] Delete account (blocked while wallet has money or a handover is in progress; type DELETE to confirm)
 - [ ] Toast messages for success, waiting, offline and errors
 - [ ] Partner: intake scan, bulk intake, stock, handover (QR + OTP)
 - [ ] Declare loss + automatic matching + push / SMS notification
@@ -390,7 +402,7 @@ For each new `IN_CUSTODY` document and each new loss declaration of the same typ
 
 ## 19. Open questions
 
-1. Final fee per type: flat 1,500 FCFA, or tiered (student card 1,000 · CNI / licence / birth certificate 2,000 · passport / diploma 3,000).2. Notch Pay vs CinetPay: payout API availability and KYC requirements for a student project.
+1. Validate the tiered fees with the survey ("how much would you pay to get your CNI back?") and the pilot.2. Notch Pay vs CinetPay: payout API availability and KYC requirements for a student project.
 3. SMS provider for Cameroon (cost per SMS, sender ID) — only once funded; the MVP uses Google / email sign-in and push notifications.
 4. Which partner points agree to the pilot?
 5. Is a face check by the agent enough, or should the owner also show another ID?
