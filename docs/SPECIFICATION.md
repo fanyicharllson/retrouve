@@ -390,9 +390,8 @@ For each new `IN_CUSTODY` document and each new loss declaration of the same typ
 
 ## 19. Open questions
 
-1. Final fee per type: flat 1,500 FCFA, or tiered (student card 1,000 · CNI / licence / birth certificate 2,000 · passport / diploma 3,000).
-6. If an owner never confirms receipt in a direct handover, should the finder's reward auto-release after 72 h without a reported problem?
-2. Notch Pay vs CinetPay: payout API availability and KYC requirements for a student project.
+1. Final fee per type: flat 1,500 FCFA, or tiered (student card 1,000 · CNI / licence / birth certificate 2,000 · passport / diploma 3,000).2. Notch Pay vs CinetPay: payout API availability and KYC requirements for a student project.
 3. SMS provider for Cameroon (cost per SMS, sender ID) — only once funded; the MVP uses Google / email sign-in and push notifications.
 4. Which partner points agree to the pilot?
 5. Is a face check by the agent enough, or should the owner also show another ID?
+6. If an owner never confirms receipt in a direct handover, should the finder's reward auto-release after 72 h without a reported problem?
