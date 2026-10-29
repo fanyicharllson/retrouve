@@ -65,4 +65,4 @@ Requirements: Node.js LTS, Go (latest stable), PostgreSQL 16+, an Android device
 
 ## License
 
-Private. All rights reserved.
+Proprietary — © 2026 Fanyi Charllson. All rights reserved. See [LICENSE](LICENSE).
