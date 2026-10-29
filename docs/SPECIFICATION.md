@@ -181,6 +181,10 @@ Direct handover: DECLARED ──▶ WITH_FINDER ──(owner verified)──▶ 
 - Provider: **Notch Pay** (primary) or **CinetPay**. Collection by MTN MoMo / Orange Money. Payouts (finder / partner) via the provider's transfer API, or manually by admin in the MVP if the API is not available.
 - **Escrow:** the fee is collected at claim time and recorded as `HELD`; it is split only after `RETURNED`.
 - Refund if the partner cannot hand over within 14 days (lost document, partner closed).
+- **Release rule:** the finder's (and partner's) share is credited only after the owner confirms receipt — at a partner point the agent's QR scan + "Handed over" counts as confirmation; in a direct handover the finder taps "I handed it over" **and** the owner taps "I received it". The app reminds the owner automatically.
+- **Wallet:** every user has an in-app wallet showing *available* and *on hold* amounts and a history. Withdrawals go to MTN MoMo / Orange Money (minimum 500 FCFA), with the provider's transfer fee shown before confirming.
+- **Provider fees:** the payment provider takes a cut on collection (owner pays in) and on payout (withdrawal). The collection fee is taken from the **platform's** share so the finder and partner amounts stay round; the payout fee is shown to the user at withdrawal. Exact rates depend on the chosen provider (Notch Pay / CinetPay).
+- **No payment between users:** chat between finder and owner opens only after the owner has paid, and blocks phone numbers and money requests, so payments stay in the app (protecting users and the platform's revenue).
 - **Payment timing:** right after successful verification, before pickup. Shown to the owner as "where your money goes".
 - **Split** (on a 1,500 FCFA fee), platform share minus provider fees:
 
@@ -295,6 +299,11 @@ For each new `IN_CUSTODY` document and each new loss declaration of the same typ
 - `claims` — verification attempts, result, handover QR / OTP, expiry.
 - `payments` — claim, amount, provider ref, status (`PENDING`, `HELD`, `RELEASED`, `REFUNDED`).
 - `payouts` — beneficiary, amount, status.
+- `wallets` — user, available balance, on-hold balance.
+- `wallet_transactions` — wallet, type (reward, withdrawal, refund), amount, status (`ON_HOLD`, `AVAILABLE`, `PAID_OUT`), related claim.
+- `messages` — handover, sender, text, created at (only after payment; filtered).
+- `problem_reports` — user, kind, related document, details, screenshot, status.
+- `partner_applications` — user, business name, type, location, hours, documents, status.
 - `custody_events` — document, from-state, to-state, actor, partner point, timestamp (audit log).
 - `notifications`, `disputes`, `ratings`.
 
@@ -311,6 +320,8 @@ For each new `IN_CUSTODY` document and each new loss declaration of the same typ
 | Losses | `POST /loss-declarations` · `GET /me/loss-declarations` · `POST /registered-documents` |
 | Matches & claims | `GET /me/matches` · `POST /matches/{id}/verify` · `POST /claims/{id}/pay` |
 | Payments | `POST /webhooks/payments/{provider}` |
+| Wallet | `GET /me/wallet` · `GET /me/wallet/transactions` · `POST /me/wallet/withdrawals` |
+| Support | `POST /problem-reports` · `POST /partner-applications` · `GET /app/version` |
 | Partner | `GET /partner-points?near=` · `POST /partner/intake` (scan drop-off QR) · `POST /partner/bulk-intake` · `GET /partner/stock` · `POST /partner/handover` · `POST /partner/to-authority` |
 | Admin | `GET/PATCH /admin/partner-points` · `GET/PATCH /admin/disputes` · `GET /admin/stats` · `GET /admin/audit` · `POST /admin/payouts/{id}/retry` |
 
@@ -328,6 +339,10 @@ For each new `IN_CUSTODY` document and each new loss declaration of the same typ
 - [ ] Direct handover: in-app messages, finder scans owner QR, double confirmation
 - [ ] My documents: status timeline, waiting tips, codes always available
 - [ ] Privacy-first search (name + date of birth)
+- [ ] Wallet: available / on hold, history, withdraw to MoMo / OM
+- [ ] Alerts tab, Profile tab (version + check for updates, sign-out confirmation)
+- [ ] Help & how it works (in-app browser to the website), report a problem, become a partner point
+- [ ] Toast messages for success, waiting, offline and errors
 - [ ] Partner: intake scan, bulk intake, stock, handover (QR + OTP)
 - [ ] Declare loss + automatic matching + push / SMS notification
 - [ ] Ownership verification: document photo upload **or** questions
@@ -375,7 +390,8 @@ For each new `IN_CUSTODY` document and each new loss declaration of the same typ
 
 ## 19. Open questions
 
-1. Final fee per type and split percentages.
+1. Final fee per type: flat 1,500 FCFA, or tiered (student card 1,000 · CNI / licence / birth certificate 2,000 · passport / diploma 3,000).
+6. If an owner never confirms receipt in a direct handover, should the finder's reward auto-release after 72 h without a reported problem?
 2. Notch Pay vs CinetPay: payout API availability and KYC requirements for a student project.
 3. SMS provider for Cameroon (cost per SMS, sender ID) — only once funded; the MVP uses Google / email sign-in and push notifications.
 4. Which partner points agree to the pilot?
