@@ -14,11 +14,13 @@ Retrouvé is a mobile app that returns lost official documents (CNI, birth certi
 
 ## Features (MVP)
 
-- Phone number login (OTP), French / English
+- Google or email-code sign-in, French / English
+- **+** menu: I found · I lost · Protect a document
 - Found-document scan with on-device OCR and masking
-- Partner point map, drop-off and handover by QR code
-- Loss declarations with automatic matching
-- Ownership verification per document type
+- Partner point drop-off, or direct handover where the finder scans the owner's QR code
+- Loss reports with automatic matching; nothing is ever public
+- My documents: status timeline, waiting tips, codes always available
+- Ownership verification by document photo upload or questions
 - MoMo / Orange Money payment held in escrow, automatic reward split
 - Custody audit log; unclaimed documents returned to the authority after 90 days
 - Admin space: partner approval, disputes, statistics
