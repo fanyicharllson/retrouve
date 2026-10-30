@@ -119,8 +119,12 @@ Passport, carte grise, récépissé CNI, nationality certificate, marriage certi
    - **Direct handover:** finder keeps the document → status = `WITH_FINDER` (see §7.5).
 6. Every code (drop-off, pickup) is stored in the user's account and always available under **My documents**, even after closing the app.
 
-### 7.2 Partner bulk intake
-Agent at a commissariat / campus office scans many documents in a row (no finder involved). Each becomes `IN_CUSTODY` directly. Finder share goes to the partner.
+### 7.2 Partner mode
+Approved partners switch to **Partner mode** (Desk · Stock · Earnings):
+- **Receive a document:** scan the finder's drop-off code → check the card in hand (type, last 3 digits, first letters of the name, intact) → the app assigns a **storage slot** (e.g. Drawer A · slot 07, written on the envelope) → `IN_CUSTODY`. If it doesn't match, the agent refuses it and the finder keeps it.
+- **Stock:** every document with its slot, status (waiting for owner / owner verified · pickup due) and age; alerts before the 90-day return to the authority.
+- **Hand over:** scan the owner's pickup code → the app shows which slot to open → agent checks last 3 digits + face → "Handed over" → shares released (partner share to the business wallet). Never accept cash.
+- **Bulk intake:** for commissariats, campus offices and bus agencies holding many documents with no finder: continuous auto-capture scanning, each document gets the next free slot, matches with existing loss reports are flagged immediately. Each becomes `IN_CUSTODY` directly; the finder share goes to the partner.
 
 ### 7.3 Owner declares a loss
 1. Owner taps **"J'ai perdu un document"**, picks the type, enters name, DOB and any known number.
@@ -304,7 +308,7 @@ For each new `IN_CUSTODY` document and each new loss declaration of the same typ
 - `partner_points` — name, type (shop, cyber, campus, commissariat), location, hours, status.
 - `partner_agents` — user ↔ partner point.
 - `document_types` — code, labels, field schema, match rule, questions, fee, end-of-life destination.
-- `found_documents` — type, extracted fields (JSONB), number hash, masked image URL, finder, partner point, status.
+- `found_documents` — type, extracted fields (JSONB), number hash, masked image URL, finder, partner point, storage slot, status.
 - `loss_declarations` — owner, type, name, DOB, number hash, status.
 - `registered_documents` — pre-registered documents of an owner.
 - `matches` — found document ↔ declaration, score, status.
