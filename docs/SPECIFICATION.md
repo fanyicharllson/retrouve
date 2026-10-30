@@ -213,7 +213,7 @@ Direct handover: DECLARED ──▶ WITH_FINDER ──(owner verified)──▶ 
 | Someone harvests personal data | No public listing or name search. Owners only see a match after giving name + DOB, and details only after verification. Search rate-limited per account. |
 | Image misuse | Masking on device; unmasked images are never uploaded or stored. |
 | Impostor claims a document | Type-specific questions, 3 attempts, face check against the document photo at handover, OTP to the declared phone. |
-| Fake partner point | Partner points approved by admin (visit / call, business registration or institution letter). |
+| Fake partner point | 6-step verification before approval: business details + GPS + shop photo, business proof (registration / patente / institution letter), payout account in the business name, manager ID + live selfie (checked by a person), rules quiz + signed agreement, on-site visit (storage, identity, sticker). Random spot checks after approval. |
 | Finder asks for direct payment | App warns: never pay anyone directly; all payments in-app. Reports → admin. |
 | Direct handover: unsafe meeting | Public places only, in-app messages with hidden phone numbers, partner point offered as meeting place. |
 | Direct handover: finder never shows | Escrow — owner refunded after 48 h; finder reputation lowered. |
@@ -246,6 +246,9 @@ For each new `IN_CUSTODY` document and each new loss declaration of the same typ
 - **Offline-first capture:** the finder can scan without network; the upload retries automatically.
 - **Low-end devices:** Android 8+, 2 GB RAM; images compressed < 300 KB.
 - **Languages:** French and English.
+- **Themes:** light and dark, following the phone setting with a manual override in Settings; one set of colour tokens (bg, surface, surface-2, border, text, text-muted, brand, success, accent, on-accent, warning-bg, danger).
+- **Motion:** scanning feedback (scan line, highlighted fields, step-by-step auto-fill, progress) with `react-native-reanimated` and haptics; disabled when the phone's "reduce motion" setting is on.
+- **Imagery:** real photos taken locally (with consent) or one consistent illustration set; sample documents always marked SPECIMEN, never a copy of an official design.
 - **Availability:** 99 % during the pilot.
 - **Auditability:** every state change logged (who, when, where).
 - **Testability:** unit tests on matching, state machine and payment split; end-to-end tests on main flows.
